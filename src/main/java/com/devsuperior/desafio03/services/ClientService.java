@@ -18,4 +18,9 @@ public class ClientService {
         Client client = repository.findById(id).get();
         return new ClientDTO(client);
     }
+
+    @Transactional
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
 }
