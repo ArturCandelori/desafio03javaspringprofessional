@@ -4,6 +4,8 @@ import com.devsuperior.desafio03.dto.ClientDTO;
 import com.devsuperior.desafio03.entities.Client;
 import com.devsuperior.desafio03.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +21,23 @@ public class ClientService {
         return new ClientDTO(client);
     }
 
+    @Transactional(readOnly = true)
+    public Page<ClientDTO> findAll(Pageable pageable) {
+        Page<Client> result = repository.findAll(pageable);
+        return result.map(x -> new ClientDTO(x));
+    }
+
     @Transactional
     public ClientDTO insert(ClientDTO dto) {
         Client entity = new Client();
+        copyDtoToEntity(dto, entity);
+        entity = repository.save(entity);
+        return new ClientDTO(entity);
+    }
+
+    @Transactional
+    public ClientDTO update(Long id, ClientDTO dto) {
+        Client entity = repository.getReferenceById(id);
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
         return new ClientDTO(entity);
